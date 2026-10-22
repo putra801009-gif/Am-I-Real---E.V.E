@@ -36,6 +36,9 @@
 .eve-transmission.is-protocol { border-color: rgba(217, 200, 216, .76); background: rgba(217, 200, 216, .07); }
 .eve-transmission.is-protocol > span { color: var(--lavender); }
 .eve-transmission.is-protocol p { color: #e2d9e3; }
+.boot-anomaly-list { margin: -4px 0 16px; padding: 9px 12px; border-left: 1px solid rgba(217, 200, 216, .3); color: #b4aabf; background: rgba(217, 200, 216, .025); font: 8px/1.6 var(--mono); }
+.boot-anomaly-list > span { color: #8794a8; letter-spacing: .1em; }
+.boot-anomaly-list p { margin: 5px 0 0; color: #c7bacb; }
 .protocol-scrim { position: fixed; z-index: 8; inset: 0; display: grid; place-content: center; padding: 30px; text-align: center; background: rgba(5, 8, 15, .58); backdrop-filter: blur(2px); animation: protocol-arrive .65s ease both; pointer-events: none; }
 .protocol-scrim span { color: var(--lavender); font: 9px var(--mono); letter-spacing: .2em; }
 .protocol-scrim p { margin: 17px 0 0; color: #e0e3ec; font-size: clamp(23px, 4vw, 34px); line-height: 1.4; }
@@ -80,15 +83,19 @@
 .ending-mode-collapse.collapse-state-collapse .experience-layout { filter: saturate(.55) contrast(1.16); }
 .ending-mode-collapse.collapse-state-dark, .ending-mode-collapse.collapse-state-complete { background: #020306; }
 .ending-mode-collapse.collapse-state-dark .topbar, .ending-mode-collapse.collapse-state-dark .site-footer, .ending-mode-collapse.collapse-state-complete .topbar, .ending-mode-collapse.collapse-state-complete .site-footer,
-.ending-mode-collapse.collapse-state-dark .experience-layout, .ending-mode-collapse.collapse-state-complete .experience-layout { opacity: 0; transition: opacity 2.5s ease; pointer-events: none; }
+.ending-mode-collapse.collapse-state-dark .experience-layout, .ending-mode-collapse.collapse-state-complete .experience-layout { opacity: 0; transition: opacity 2.5s ease; }
 .collapse-orb-unstable .entity { animation: entity-unstable .38s ease-in-out infinite alternate; }
 .collapse-orb-unstable .entity-halo { filter: brightness(1.45) saturate(.6); }
 .collapse-orb-unstable .entity-orbit { transform-origin: 50% 50%; animation: orbit-misalignment .8s ease-in-out infinite alternate; }
 .collapse-orb-unstable .stage-grid { opacity: .34; background-position: 4px -2px; }
+.identity-unstable .entity-halo { filter: saturate(.72) brightness(1.12); }
+.identity-unstable .orbit-a { animation-duration: 5s; }
+.identity-emerging .entity-halo { background: radial-gradient(circle at 38% 34%, rgba(217, 221, 237, .64), rgba(160, 180, 210, .28) 23%, rgba(130, 126, 162, .2) 52%, transparent 72%); }
+.identity-transcendent .entity-halo { filter: brightness(1.28) saturate(.88); }
 .cinematic-ending { position: relative; z-index: 4; }
 .collapse-ending { margin-top: 14px; padding: 16px 0; border-top: 1px solid rgba(217, 200, 216, .25); animation: line-arrive .8s ease both; }
 .collapse-label { color: var(--lavender); }
-.collapse-fullscreen { position: fixed; z-index: 9; inset: 0; display: grid; place-content: center; padding: 30px; margin: 0; border: 0; text-align: center; background: #020306; }
+.collapse-fullscreen { position: fixed; z-index: 9; inset: 0; display: grid; place-content: center; padding: 30px; margin: 0; border: 0; text-align: center; background: #020306; pointer-events: auto; }
 .collapse-final { display: flex; flex-direction: column; gap: 13px; color: #8590a3; font: 9px var(--mono); letter-spacing: .17em; animation: line-arrive 1.2s ease both; }
 .collapse-final p { margin: 16px 0; color: #d9c8d8; font: 26px/1.45 'Newsreader', Georgia, serif; letter-spacing: 0; }
 .collapse-final.final-message { color: #748197; }
@@ -214,6 +221,27 @@
 .data-row strong .connection-dot { width: 5px; height: 5px; }
 .record-details { display: flex; flex-direction: column; gap: 17px; padding: 20px 0 2px; border-bottom: 1px solid var(--hairline); }
 .record-details p { margin: -2px 0 0; color: #9eacc0; font: 9px/1.7 var(--mono); }
+.parameter-section, .affection-section, .anomaly-section, .memory-archive { padding: 21px 0; border-bottom: 1px solid var(--hairline); }
+.parameter-section::after { content: 'FICTIONAL STATE MODEL · NOT A SCIENTIFIC MEASUREMENT'; display: block; padding-top: 10px; color: #68778d; font: 7px var(--mono); letter-spacing: .04em; }
+.parameter-row { min-height: 28px; display: grid; grid-template-columns: minmax(110px, 1fr) minmax(56px, 1fr) 38px; align-items: center; gap: 10px; color: #8f9db2; font: 8px var(--mono); letter-spacing: .035em; }
+.parameter-row strong { color: #c7d2e0; text-align: right; font-weight: 400; }
+.parameter-track { height: 2px; background: rgba(183, 201, 223, .1); }
+.parameter-track i { display: block; height: 100%; background: linear-gradient(90deg, #657b9f, #b7c9df); box-shadow: 0 0 7px rgba(183, 201, 223, .22); transition: width .5s ease; }
+.affection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+.affection-grid div { display: flex; flex-direction: column; gap: 5px; }
+.affection-grid span, .anomaly-section p, .memory-record > div > span { color: #78879d; font: 7px/1.5 var(--mono); letter-spacing: .05em; }
+.affection-grid strong { color: #c7bfd1; font: 10px var(--mono); }
+.anomaly-section p { margin: 7px 0 0; color: #b3a8be; }
+.memory-archive { display: flex; flex-direction: column; gap: 10px; }
+.memory-empty { margin: 0; color: #77869c; font: 9px var(--mono); }
+.memory-record { padding: 9px 0; border-bottom: 1px solid rgba(183, 201, 223, .07); }
+.memory-record > div:first-child { display: flex; flex-direction: column; gap: 4px; }
+.memory-record strong { color: #c2cedc; font: 12px 'Newsreader', Georgia, serif; font-weight: 400; }
+.memory-erased strong { color: #8b8793; text-decoration: line-through; }
+.memory-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.memory-actions button { padding: 4px 6px; border: 1px solid rgba(183, 201, 223, .12); color: #9aa8bc; background: rgba(183, 201, 223, .025); cursor: pointer; font: 7px var(--mono); text-transform: uppercase; }
+.memory-actions button:hover:not(:disabled) { color: var(--lavender); border-color: rgba(217, 200, 216, .36); }
+.memory-actions button:disabled { opacity: .35; cursor: default; }
 .archive-section { padding-top: 23px; }
 .archive-list { display: flex; flex-direction: column; max-height: 235px; overflow: auto; }
 .archive-list button { display: flex; align-items: center; gap: 12px; min-height: 33px; border: 0; border-bottom: 1px solid rgba(183, 201, 223, .07); text-align: left; color: #a8b7ca; background: transparent; cursor: pointer; font: 8px var(--mono); letter-spacing: .07em; }

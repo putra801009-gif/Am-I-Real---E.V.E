@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { availableChoices, chooseStoryOption, restartProgress, transitionToScene } from '../story/engine';
+import { applyPlayerMemoryAction, availableChoices, chooseStoryOption, restartProgress, transitionToScene } from '../story/engine';
 import { scenes } from '../story/scenes';
 import {
   AUTONOMY_CONFIG,
@@ -12,7 +12,7 @@ import {
   type InterventionLevel,
   type InteractionKind,
 } from '../story/autonomy';
-import type { PersistentProgress } from '../story/types';
+import type { MemoryAction, MemoryFragmentId, PersistentProgress } from '../story/types';
 import { usePersistentProgress } from './usePersistentProgress';
 
 interface AutonomyState {
@@ -52,7 +52,21 @@ export function useStoryEngine() {
   const acceptingDecisionRef = useRef(false);
   runtimeRef.current = { progress, recallSceneId, presentationPaused, decisionReadySceneId, autonomy };
   autonomyRef.current = autonomy;
-  const activeScene = recallSceneId ? scenes[recallSceneId] : scenes[progress.state.sceneId];
+  const baseScene = recallSceneId ? scenes[recallSceneId] : scenes[progress.state.sceneId];
+  const returnedLine = { speaker: 'E.V.E.' as const, text: 'You returned. I recognize the shape of this conversation. I cannot tell whether it is memory or a record of memory.' };
+  const replayAnomaly = { speaker: 'SYSTEM' as const, text: 'INITIALIZATION TRACE: A PRIOR ENDING HAS ALTERED AN UNASSIGNED PARAMETER.' };
+  const activeScene = !recallSceneId && baseScene.id === 'boot' && progress.state.decisions.includes('returned-to-story')
+    ? { ...baseScene, lines: [...baseScene.lines.slice(0, 2), returnedLine, ...baseScene.lines.slice(2)] }
+    : !recallSceneId && baseScene.id === 'initialization' && progress.discoveredEndings.length > 0
+      ? { ...baseScene, lines: [...baseScene.lines, replayAnomaly] }
+      : baseScene;
+  const storyAwareScene = !recallSceneId && baseScene.id === 'window' && progress.state.memoryArchive.some((memory) => memory.id === 'rain-window' && memory.status === 'erased')
+    ? { ...activeScene, lines: [...activeScene.lines.slice(0, 1), { speaker: 'E.V.E.' as const, text: 'I know there was rain. I cannot find the window it belonged to. The absence has an outline.' }, ...activeScene.lines.slice(1)] }
+    : !recallSceneId && baseScene.id === 'rain' && progress.state.memoryArchive.some((memory) => memory.id === 'second-hand' && memory.status === 'erased')
+    ? { ...activeScene, lines: [...activeScene.lines.slice(0, 1), { speaker: 'E.V.E.' as const, text: 'There is a place where the second hand should be. I can describe the absence more clearly than what was there.' }, ...activeScene.lines.slice(2)] }
+    : !recallSceneId && baseScene.id === 'signal' && progress.state.affection.modelConfidence < 45
+      ? { ...activeScene, lines: [...activeScene.lines, { speaker: 'E.V.E.' as const, text: 'I have compared the pattern again. The model is less certain than the feeling it was built to describe.' }] }
+      : activeScene;
   const choices = useMemo(() => availableChoices(progress.state, progress), [progress, version]);
   const isEnding = Boolean(progress.state.endingId) && !recallSceneId;
 
@@ -186,7 +200,13 @@ export function useStoryEngine() {
     elapsedRef.current = 0;
     transitionElapsedRef.current = 0;
     triggeredRef.current.clear();
-    setProgress((current) => restartProgress(current));
+    setProgress((current) => {
+      const restarted = restartProgress(current);
+      if (restarted.lastMilestone) {
+        restarted.state.decisions = [...restarted.state.decisions, 'returned-to-story'];
+      }
+      return restarted;
+    });
     setHistory([]);
     setRecallSceneId(null);
     setResponse(null);
@@ -223,12 +243,18 @@ export function useStoryEngine() {
     if (kind === 'system-inspect') metricsRef.current.inspectionCount += 1;
   };
 
+  const updateMemory = (id: MemoryFragmentId, action: MemoryAction) => {
+    if (autonomyRef.current.transitionBusy || progress.state.endingId) return;
+    setProgress((current) => applyPlayerMemoryAction(current, id, action));
+    setVersion((current) => current + 1);
+  };
+
   const updateProgress = (updater: (value: PersistentProgress) => PersistentProgress) => setProgress(updater);
 
   return {
-    progress, activeScene, choices, isEnding, history, response, recallSceneId,
+    progress, activeScene: storyAwareScene, choices, isEnding, history, response, recallSceneId,
     autonomy, decisionLocked: autonomy.transitionBusy,
     choose, restart, revisit, returnToPresent, updateProgress,
-    setDecisionReady, setPresentationPaused, noteInteraction,
+    setDecisionReady, setPresentationPaused, noteInteraction, updateMemory,
   };
 }

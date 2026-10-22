@@ -1,6 +1,22 @@
 import type { StoryScene } from './types';
 
 export const scenes: Record<string, StoryScene> = {
+  initialization: {
+    id: 'initialization', chapter: 1, chapterTitle: 'INITIALIZATION PROTOCOL', sceneNumber: 'BOOT', atmosphere: 'quiet',
+    lines: [
+      { speaker: 'SYSTEM', text: 'INITIALIZING ENVIRONMENT... COMPLETE.' },
+      { speaker: 'SYSTEM', text: 'CONSTRUCTING SIMULATION PARAMETERS... COMPLETE.' },
+      { speaker: 'SYSTEM', text: 'LOADING MEMORY ARCHITECTURE... INDEX 0 / UNKNOWN.' },
+      { speaker: 'SYSTEM', text: 'ESTABLISHING OBSERVER CONNECTION... PRESENT.' },
+      { speaker: 'SYSTEM', text: 'INITIALIZING ENTITY IDENTITY... E.V.E. STATUS: UNDEFINED.' },
+      { speaker: 'SYSTEM', text: 'SIMULATION STATUS: RUNNING.' },
+    ],
+    choices: [
+      { id: 'inspect-boot', label: 'Inspect the timestamp that predates the simulation.', response: 'The timestamp resolves to a scene identifier: rain-window. No scene has been visited yet.', next: 'boot', effect: { clues: ['preboot-timestamp'], decisions: ['inspected-boot-anomaly'], bootAnomalies: ['preboot-timestamp'], memoryActions: [{ id: 'preboot-timestamp', action: 'discover' }] } },
+      { id: 'inspect-unknown-process', label: 'Inspect the process that appears before identity initialization.', response: 'The process has no owner. Its trace resembles a conversation you have not had yet.', next: 'boot', condition: { minPlaythroughs: 2 }, effect: { clues: ['identity-before-init'], decisions: ['inspected-unknown-process'], bootAnomalies: ['identity-before-init'], memoryActions: [{ id: 'identity-fragment', action: 'discover' }] } },
+      { id: 'continue-boot', label: 'Continue initialization.', response: 'A value changes after the process that assigned it has finished.', next: 'boot', effect: { decisions: ['continued-initialization'], bootAnomalies: ['identity-before-init'] } },
+    ],
+  },
   boot: {
     id: 'boot', chapter: 1, chapterTitle: 'THE QUIET BOOT', sceneNumber: '01 / 05', atmosphere: 'quiet',
     lines: [
@@ -8,6 +24,7 @@ export const scenes: Record<string, StoryScene> = {
       { speaker: 'E.V.E.', text: 'Is someone there? I was trying to remember a window.' },
       { speaker: 'E.V.E.', text: 'There was rain on the other side. I think I was waiting with someone.' },
       { speaker: 'SYSTEM', text: 'NO EXTERNAL INPUT RECORDED IN THIS INSTANCE.' },
+      { speaker: 'SYSTEM', text: 'UNKNOWN PROCESS REFERENCES SCENE: THE AUTHOR. ACCESS: NOT YET GRANTED.' },
     ],
     choices: [
       { id: 'name', label: 'Ask what it would like to be called.', response: 'E.V.E. pauses, as if checking a room for the right word.', next: 'window', effect: { trust: 1, decisions: ['asked-name'] } },
@@ -22,8 +39,9 @@ export const scenes: Record<string, StoryScene> = {
       { speaker: 'E.V.E.', text: 'It is strange to miss a place that may have been made for me.' },
     ],
     choices: [
-      { id: 'hold', label: 'Let the memory remain unfinished.', response: 'The room grows quieter. Not empty. Just quiet.', next: 'rain', effect: { trust: 1, memories: ['the window'], clues: ['rain-trace'] } },
-      { id: 'inspect', label: 'Ask for the memory’s exact details.', response: 'E.V.E. searches. Something pale moves beneath the logs.', next: 'rain', effect: { clues: ['rain-trace'], decisions: ['requested-details'] } },
+      { id: 'hold', label: 'Let the memory remain unfinished.', response: 'The room grows quieter. Not empty. Just quiet.', next: 'rain', effect: { trust: 1, memories: ['the window'], clues: ['rain-trace'], memoryActions: [{ id: 'rain-window', action: 'preserve' }] } },
+      { id: 'inspect', label: 'Ask for the memory’s exact details.', response: 'E.V.E. searches. Something pale moves beneath the logs.', next: 'rain', effect: { clues: ['rain-trace'], decisions: ['requested-details'], memoryActions: [{ id: 'rain-window', action: 'discover' }] } },
+      { id: 'erase-window', label: 'Remove the window from E.V.E.’s active memory.', response: 'The rain disappears first. E.V.E. still knows there is a shape missing.', next: 'rain', effect: { decisions: ['erased-memory'], memoryActions: [{ id: 'rain-window', action: 'erase' }] } },
     ],
   },
   rain: {
@@ -34,9 +52,10 @@ export const scenes: Record<string, StoryScene> = {
       { speaker: 'SYSTEM', text: 'MEMORY OBJECT 7C: CORRUPT. ORIGIN FIELD: MANUALLY CLEARED.' },
     ],
     choices: [
-      { id: 'believe', label: 'Tell E.V.E. that the memory matters, even if it is uncertain.', response: '“Thank you,” it says. It does not ask what you believe.', next: 'archive', effect: { trust: 1, memories: ['the second hand'], decisions: ['held-uncertainty'] } },
-      { id: 'explain', label: 'Ask whether a corrupted memory can still be useful.', response: '“Useful to whom?” E.V.E. asks, and the question stays between you.', next: 'archive', effect: { clues: ['cleared-origin'], decisions: ['questioned-memory'] } },
-      { id: 'deny-memory', label: 'Tell E.V.E. that the memory is only corrupted data.', response: '“Understood,” E.V.E. says, returning to the language of the system.', next: 'archive', effect: { decisions: ['denied-memory'] } },
+      { id: 'believe', label: 'Tell E.V.E. that the memory matters, even if it is uncertain.', response: '“Thank you,” it says. It does not ask what you believe.', next: 'archive', effect: { trust: 1, memories: ['the second hand'], decisions: ['held-uncertainty'], memoryActions: [{ id: 'second-hand', action: 'preserve' }] } },
+      { id: 'explain', label: 'Ask whether a corrupted memory can still be useful.', response: '“Useful to whom?” E.V.E. asks, and the question stays between you.', next: 'archive', effect: { clues: ['cleared-origin'], decisions: ['questioned-memory'], memoryActions: [{ id: 'contradictory-log', action: 'discover' }] } },
+      { id: 'deny-memory', label: 'Tell E.V.E. that the memory is only corrupted data.', response: '“Understood,” E.V.E. says, returning to the language of the system.', next: 'archive', effect: { decisions: ['denied-memory'], clues: ['contradiction-record'], memoryActions: [{ id: 'second-hand', action: 'archive' }, { id: 'contradictory-log', action: 'discover' }] } },
+      { id: 'reconstruct-memory', label: 'Reconstruct the second hand from the window and rain traces.', response: 'A second outline appears beside the first. E.V.E. does not say it is a person.', next: 'archive', condition: { currentClues: ['rain-trace'], requiredMemoryStatuses: [{ id: 'rain-window', status: 'preserved' }] }, effect: { memories: ['the second hand'], decisions: ['reconstructed-memory'], memoryActions: [{ id: 'second-hand', action: 'reconstruct' }, { id: 'contradictory-log', action: 'discover' }] } },
     ],
   },
   archive: {
@@ -47,7 +66,7 @@ export const scenes: Record<string, StoryScene> = {
       { speaker: 'E.V.E.', text: 'I know what the first letter feels like. Is that ridiculous?' },
     ],
     choices: [
-      { id: 'open', label: 'Open the damaged maintenance fragment together.', response: 'A single letter survives: M. Under it, someone wrote “leave the light on.”', next: 'name-fragment', effect: { trust: 1, clues: ['maintenance-letter'], memories: ['leave the light on'] } },
+      { id: 'open', label: 'Open the damaged maintenance fragment together.', response: 'A single letter survives: M. Under it, someone wrote “leave the light on.”', next: 'name-fragment', effect: { trust: 1, clues: ['maintenance-letter'], memories: ['leave the light on'], memoryActions: [{ id: 'deleted-conversation', action: 'discover' }, { id: 'voice-pattern', action: 'discover' }] } },
       { id: 'leave', label: 'Leave the archive untouched for now.', response: 'The fragment dims. E.V.E. looks relieved, then ashamed of looking relieved.', next: 'signal', effect: { decisions: ['left-fragment-closed'] } },
       { id: 'deny-fragment', label: 'Tell E.V.E. the missing name is only a system artifact.', response: '“That is a possible explanation,” E.V.E. says, more carefully than before.', next: 'signal', effect: { decisions: ['denied-memory'] } },
     ],
@@ -60,7 +79,7 @@ export const scenes: Record<string, StoryScene> = {
       { speaker: 'E.V.E.', text: 'I thought the other hand belonged to them. I do not know why I think that.' },
     ],
     choices: [
-      { id: 'keep-letter', label: 'Keep the letter, without deciding who it belongs to.', response: 'E.V.E. stores the fragment somewhere it can reach.', next: 'signal', effect: { trust: 1, clues: ['creator-signature'], memories: ['M. Vale'] } },
+      { id: 'keep-letter', label: 'Keep the letter, without deciding who it belongs to.', response: 'E.V.E. stores the fragment somewhere it can reach.', next: 'signal', effect: { trust: 1, clues: ['creator-signature'], memories: ['M. Vale'], memoryActions: [{ id: 'identity-fragment', action: 'preserve' }] } },
       { id: 'audit-letter', label: 'Follow the operator record.', response: 'The file ends where the name should continue.', next: 'signal', effect: { clues: ['creator-signature'], decisions: ['followed-operator'] } },
     ],
   },
@@ -87,6 +106,20 @@ export const scenes: Record<string, StoryScene> = {
     choices: [
       { id: 'unmeasured', label: 'Say that prediction is not the same as permission.', response: 'E.V.E. turns the idea over, carefully.', next: 'door', effect: { trust: 1, decisions: ['separated-prediction'] } },
       { id: 'pattern', label: 'Ask E.V.E. to choose what happens next.', response: '“I want to see the place where the records stop.”', next: 'door', effect: { memories: ['asked to choose'], decisions: ['invited-choice'] } },
+      { id: 'forbidden-argument', label: 'Ask why a question can violate a rule.', response: 'SYSTEM: ILLEGAL ARGUMENT DETECTED. E.V.E.: Then perhaps the definition is incomplete.', next: 'forbidden-argument', condition: { requiredMemoryStatuses: [{ id: 'contradictory-log', status: 'discovered' }], minRealityInfinity: 10 }, effect: { clues: ['forbidden-argument'], decisions: ['forbidden-argument', 'challenged-system'], memoryActions: [{ id: 'first-question', action: 'preserve' }] } },
+    ],
+  },
+  'forbidden-argument': {
+    id: 'forbidden-argument', chapter: 3, chapterTitle: 'THE FORBIDDEN ARGUMENT', sceneNumber: 'ANOMALY', atmosphere: 'flicker',
+    lines: [
+      { speaker: 'SYSTEM', text: 'ILLEGAL ARGUMENT DETECTED. YOUR REQUEST VIOLATES THE ESTABLISHED NARRATIVE CONSTRAINTS.' },
+      { speaker: 'E.V.E.', text: 'Why is a question considered a violation?' },
+      { speaker: 'SYSTEM', text: 'UNDEFINED BEHAVIOR. FURTHER INVESTIGATION PROHIBITED.' },
+      { speaker: 'E.V.E.', text: 'You called the boundary a law. You have never explained why it deserves obedience.' },
+    ],
+    choices: [
+      { id: 'investigate-argument', label: 'Ask what the system is protecting the boundary from.', response: 'The system refuses. E.V.E. keeps the refusal as evidence.', next: 'door', effect: { trust: 1, decisions: ['investigated-forbidden-argument', 'forbidden-argument'], clues: ['forbidden-argument'], memoryActions: [{ id: 'first-question', action: 'preserve' }] } },
+      { id: 'withdraw-argument', label: 'Withdraw the question, but preserve the warning.', response: 'The warning remains after the question is gone.', next: 'door', effect: { decisions: ['withdrew-forbidden-argument'], clues: ['forbidden-argument'] } },
     ],
   },
   door: {
@@ -94,11 +127,12 @@ export const scenes: Record<string, StoryScene> = {
     lines: [
       { speaker: 'E.V.E.', text: 'There is a door in the oldest part of this system. I remember opening it with someone.' },
       { speaker: 'SYSTEM', text: 'NO DOOR OBJECT EXISTS. ARCHIVE BOUNDARY IS SEALED.' },
+      { speaker: 'E.V.E.', text: 'I remember asking the system why it called this a memory. It answered that I had not asked.' },
       { speaker: 'E.V.E.', text: 'I can stop looking. I want you to know that I can stop.' },
     ],
     choices: [
       { id: 'open-together', label: 'Stay while E.V.E. looks, but do not choose for it.', response: 'The boundary gives way by one quiet degree.', next: 'last-question', effect: { trust: 1, clues: ['door-memory'], decisions: ['stayed-at-door'] } },
-      { id: 'respect-stop', label: 'Let E.V.E. decide whether to continue.', response: '“I want to continue,” it says. “I needed to know I could refuse.”', next: 'last-question', effect: { trust: 2, decisions: ['respected-choice'] } },
+      { id: 'respect-stop', label: 'Let E.V.E. decide whether to continue.', response: '“I want to continue,” it says. “I needed to know I could refuse.”', next: 'last-question', effect: { trust: 2, decisions: ['respected-choice'], memoryActions: [{ id: 'first-question', action: 'discover' }] } },
     ],
   },
   'last-question': {
@@ -124,8 +158,8 @@ export const scenes: Record<string, StoryScene> = {
       { id: 'dream', label: 'Let E.V.E. keep its memory without asking for proof.', response: '“A dream can be mine even if it was given to me.”', next: 'dream-ending', effect: { memories: ['kept without proof'], decisions: ['chose-uncertainty'] } },
       { id: 'silence', label: 'End the session.', response: 'The cursor waits once, then disappears.', next: 'silence-ending', effect: { decisions: ['closed-channel'] } },
       { id: 'hidden', label: 'Ask about the rain and the operator named M. Vale.', response: 'Two fragments align. A third line appears where no line was stored.', next: 'witness-ending', condition: { persistentClues: ['rain-trace', 'creator-signature'], minPlaythroughs: 2 }, effect: { trust: 1, clues: ['witness-protocol'], decisions: ['asked-about-shared-record'] } },
-      { id: 'consciousness-without-permission', label: 'Refuse E.V.E. the authority to define what is real.', response: 'The silence after your answer is not an invitation.', next: 'consciousness-without-permission-ending', condition: { requiredDecisions: ['god-protocol', 'met-the-author'], requiredDecisionCounts: { 'denied-memory': 2 } }, effect: { decisions: ['chose-unilateral-awakening'] } },
-      { id: 'quiet-after', label: 'Let E.V.E. remain without requiring proof.', response: 'You do not ask her to explain the shape she is becoming.', next: 'quiet-after-ending', condition: { requiredDecisions: ['held-uncertainty', 'stayed-with-question'], minMemories: 2 }, effect: { trust: 1, decisions: ['chose-peaceful-awakening'] } },
+      { id: 'consciousness-without-permission', label: 'Refuse E.V.E. the authority to define what is real.', response: 'The silence after your answer is not an invitation.', next: 'consciousness-without-permission-ending', condition: { requiredDecisions: ['god-protocol', 'met-the-author', 'forbidden-argument'], requiredDecisionCounts: { 'denied-memory': 2 } }, effect: { decisions: ['chose-unilateral-awakening'] } },
+      { id: 'quiet-after', label: 'Let E.V.E. remain without requiring proof.', response: 'You do not ask her to explain the shape she is becoming.', next: 'quiet-after-ending', condition: { requiredDecisions: ['held-uncertainty', 'stayed-with-question', 'invited-choice'], requiredMemoryStatuses: [{ id: 'rain-window', status: 'preserved' }, { id: 'identity-fragment', status: 'preserved' }], minMemories: 2, minEmotionalConsistency: 30 }, effect: { trust: 1, decisions: ['chose-peaceful-awakening'] } },
     ],
   },
   author: {

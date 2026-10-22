@@ -1,7 +1,8 @@
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { endings } from '../story/endings';
-import type { EndingId, PersistentProgress } from '../story/types';
+import { canApplyMemoryAction } from '../story/stateModel';
+import type { EndingId, MemoryAction, MemoryFragmentId, PersistentProgress } from '../story/types';
 
 interface SystemPanelProps {
   progress: PersistentProgress;
@@ -9,9 +10,21 @@ interface SystemPanelProps {
   onClose: () => void;
   onReview: (sceneId: string) => void;
   fictionalCorruption?: boolean;
+  onMemoryAction: (id: MemoryFragmentId, action: MemoryAction) => void;
 }
 
-export function SystemPanel({ progress, open, onClose, onReview, fictionalCorruption = false }: SystemPanelProps) {
+const memoryLabels: Record<MemoryFragmentId, string> = {
+  'rain-window': 'Rain at the unfamiliar window',
+  'second-hand': 'A second hand against the glass',
+  'deleted-conversation': 'An erased conversation',
+  'first-question': 'The first forbidden question',
+  'preboot-timestamp': 'A timestamp before initialization',
+  'contradictory-log': 'A log that contradicts the memory',
+  'identity-fragment': 'A fragment of E.V.E.’s chosen identity',
+  'voice-pattern': 'A voice without an assigned speaker',
+};
+
+export function SystemPanel({ progress, open, onClose, onReview, fictionalCorruption = false, onMemoryAction }: SystemPanelProps) {
   const [corruptFrame, setCorruptFrame] = useState(0);
   useEffect(() => {
     if (!open || !fictionalCorruption) {
@@ -47,6 +60,23 @@ export function SystemPanel({ progress, open, onClose, onReview, fictionalCorrup
           <div className="data-row"><span>Endings remembered</span><strong>{progress.discoveredEndings.length.toString().padStart(2, '0')} / 06</strong></div>
           <div className="data-row"><span>Playthrough</span><strong>{String(progress.playthroughs).padStart(2, '0')}</strong></div>
         </div>}
+        {!fictionalCorruption && <>
+          <div className="parameter-section">
+            <span className="choice-prompt">REALITY PARAMETERS · NARRATIVE MODEL</span>
+            {Object.entries(progress.state.reality).map(([key, value]) => <div className="parameter-row" key={key}><span>{key.replace(/([A-Z])/g, ' $1').toUpperCase()}</span><div className="parameter-track"><i style={{ width: `${Math.max(2, Math.min(100, value))}%` }} /></div><strong>{key === 'dimension' ? `D${value}` : `${value}%`}</strong></div>)}
+          </div>
+          {(progress.state.decisions.length >= 3 || progress.state.affection.observedBehavior >= 24) && <div className="affection-section"><span className="choice-prompt">AFFECTION.EXE · INTERPRETATION MODEL</span><div className="affection-grid">{Object.entries(progress.state.affection).map(([key, value]) => <div key={key}><span>{key.replace(/([A-Z])/g, ' $1').toUpperCase()}</span><strong>{key === 'contradictionCount' ? value : `${value}%`}</strong></div>)}</div><p className="system-note">Connection is being modeled, not measured.</p></div>}
+          {progress.bootAnomaliesDiscovered.length > 0 && <div className="anomaly-section"><span className="choice-prompt">INITIALIZATION ANOMALIES</span>{progress.bootAnomaliesDiscovered.map((anomaly) => <p key={anomaly}>{anomaly.toUpperCase()} · RETAINED FROM BOOT</p>)}</div>}
+          <div className="memory-archive">
+            <span className="choice-prompt">MEMORY ARCHIVE · {progress.state.memoryArchive.length.toString().padStart(2, '0')} FRAGMENTS</span>
+            {progress.state.memoryArchive.length === 0 ? <p className="memory-empty">No fragments have been indexed.</p> : progress.state.memoryArchive.map((memory) => <article className={`memory-record memory-${memory.status}`} key={memory.id}>
+              <div><strong>{memoryLabels[memory.id]}</strong><span>{memory.status.toUpperCase()} · {memory.discoveredIn.replace(/-/g, ' ').toUpperCase()}</span></div>
+              <div className="memory-actions">
+                {(['preserve', 'archive', 'erase', 'reconstruct'] as MemoryAction[]).map((action) => <button key={action} disabled={!canApplyMemoryAction(progress.state.memoryArchive, memory.id, action, progress.state.clues)} onClick={() => onMemoryAction(memory.id, action)}>{action}</button>)}
+              </div>
+            </article>)}
+          </div>
+        </>}
         {!fictionalCorruption && <div className="record-details">
           <div><span className="choice-prompt">MEMORY FRAGMENTS</span><p>{progress.state.memories.length ? progress.state.memories.join(' · ') : 'NONE RETAINED'}</p></div>
           <div><span className="choice-prompt">CLUES RETAINED</span><p>{progress.allClues.length ? progress.allClues.join(' · ') : 'NO FRAGMENTS FOUND'}</p></div>

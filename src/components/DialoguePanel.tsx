@@ -17,6 +17,7 @@ interface DialoguePanelProps {
   onContinue: () => void;
   onBack: () => void;
   onReturn: () => void;
+  initializationAnomalies?: string[];
 }
 
 function useRevealedLines(sceneId: string, lines: StoryLine[]) {
@@ -73,7 +74,7 @@ function useRevealedLines(sceneId: string, lines: StoryLine[]) {
   return { lineIndex, visibleText, complete, revealedLines, skip };
 }
 
-export function DialoguePanel({ scene, choices, response, revisiting, canGoBack, decisionLocked = false, transmission, onChoose, onDecisionReady, onChoiceAttention, onComplete, onContinue, onBack, onReturn }: DialoguePanelProps) {
+export function DialoguePanel({ scene, choices, response, revisiting, canGoBack, decisionLocked = false, transmission, initializationAnomalies = [], onChoose, onDecisionReady, onChoiceAttention, onComplete, onContinue, onBack, onReturn }: DialoguePanelProps) {
   const { lineIndex, visibleText, complete, revealedLines, skip } = useRevealedLines(scene.id, scene.lines);
   const activeLine = scene.lines[lineIndex];
   const finished = complete || revisiting;
@@ -115,6 +116,7 @@ export function DialoguePanel({ scene, choices, response, revisiting, canGoBack,
         <span className="scene-number">{scene.sceneNumber}</span>
       </div>
       <div className="dialogue-body" onClick={() => !complete && !revisiting && skip()} role={!complete && !revisiting ? 'button' : undefined} tabIndex={!complete && !revisiting ? 0 : undefined} aria-label={!complete && !revisiting ? 'Advance dialogue' : undefined}>
+        {initializationAnomalies.length > 0 && scene.id === 'initialization' && <div className="boot-anomaly-list"><span>REPLAY TRACE / DISCOVERED</span>{initializationAnomalies.map((anomaly) => <p key={anomaly}>{anomaly.toUpperCase()}</p>)}</div>}
         {response && !revisiting && <p className="player-response">{response}</p>}
         {revisiting ? scene.lines.map((line, index) => (
           <div className={`dialogue-line speaker-${line.speaker === 'SYSTEM' ? 'system' : 'eve'}`} key={`${scene.id}-${index}`}>

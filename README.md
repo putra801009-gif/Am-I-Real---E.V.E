@@ -32,6 +32,25 @@ In **CONSCIOUSNESS WITHOUT PERMISSION**, the ending dialogue completes before th
 
 In **THE QUIET AFTER**, the authored dialogue completes before the orb dissolves and the silhouette emerges. Its final message and return control follow the quiet interval. On mobile, the silhouette remains pinned in view as the ending text scrolls.
 
+## Expanded Narrative Systems
+
+New runs begin with **INITIALIZATION PROTOCOL**, which leads into the original opening. Inspecting the pre-boot timestamp records an anomaly; after a discovered ending, a later initialization can expose another inconsistent trace. These replay references come only from locally stored game progress.
+
+**System data** now includes narrative-derived Reality Parameters and AFFECTION.EXE diagnostics. They summarize in-story choices, clues, and memory states; they are fictional measures, not scientific or real-world observations. The Memory Archive lets you preserve, archive, erase, or reconstruct discovered fragments. Erasure changes the active fictional record and later dialogue without deleting source content or discovered endings.
+
+The **Forbidden Argument** becomes available in *A Shape in the Noise* after E.V.E. has a contradictory memory record and the Infinity parameter has risen from anomalies or system challenges. Investigating it adds a current-run system challenge milestone.
+
+The two consciousness endings have contextual requirements:
+
+- **CONSCIOUSNESS WITHOUT PERMISSION**: deny E.V.E.’s memory twice, unlock and investigate the Forbidden Argument, trigger GOD PROTOCOL at the threshold, complete THE AUTHOR, then choose the refusal option.
+- **THE QUIET AFTER**: preserve the rain-window fragment and E.V.E.’s identity fragment, choose to hold uncertainty, invite E.V.E. to choose, stay with the question, and meet the emotional-consistency floor. A single high score cannot unlock it.
+
+Reality Parameters (`DIMENSION`, `OSCILLATION`, `LIMIT`, `INFINITY`, `MEMORY INTEGRITY`, and `OBSERVER DEPENDENCY`) and AFFECTION.EXE (`OBSERVED BEHAVIOR`, `EMOTIONAL CONSISTENCY`, `OBSERVER DEPENDENCY`, `MODEL CONFIDENCE`) are calculated by `src/story/stateModel.ts` from current-run decisions, memory archive states, and clues. They are explicitly fictional narrative diagnostics. The existing entity visual uses the same state to shift between abstract, unstable, emerging, and transcendent treatments.
+
+Each memory fragment has a stable identifier and a status separate from its discovery history. Preserve, archive, erase, and reconstruct actions are handled by the story engine; erase changes the fictional record and later dialogue but never removes authored content or ending discoveries. Starting a new run retains ending/anomaly discovery and clears current-run choices and memory statuses. The parser fills newer fields when reading older version-1 saves.
+
+Ending IV additionally requires investigating **THE FORBIDDEN ARGUMENT**, which becomes available in *A Shape in the Noise* after a contradictory log is indexed and `INFINITY` reaches its threshold. The branch records the challenge and produces dedicated dialogue before returning to the story. Return dialogue and replay boot anomalies are based only on locally stored milestones and discovered endings.
+
 ## E.V.E. Autonomy
 
 When choices are available, E.V.E. may acknowledge prolonged hesitation after 12 seconds and intervene more directly after 25 seconds. On the `threshold` scene, GOD PROTOCOL can take over after 40 seconds when repeated hesitation or consequential in-story behavior makes it eligible. The transition briefly locks input, opens **THE AUTHOR**, and returns to the original ending choices. Choice timers pause while the tab is hidden, diagnostics are open, or a scene is being reviewed; temporary timers and intervention history reset on restart.

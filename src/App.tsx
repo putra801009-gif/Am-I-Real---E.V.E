@@ -47,7 +47,16 @@ export default function App() {
         onRestart={() => { story.noteInteraction('restart'); restart(); }}
       />
       <div className={`experience-layout ${story.autonomy.level === 3 ? 'god-protocol-layout' : ''} ${story.decisionLocked ? 'is-transitioning' : ''}`}>
-        <EntityVisual scene={story.activeScene} trust={story.progress.state.trust} isEnding={story.isEnding} interventionLevel={story.autonomy.level} endingMode={endingMode} endingStage={endingPresentation?.stage} turningAway={endingPresentation?.turningAway} />
+        <EntityVisual
+          scene={story.activeScene}
+          trust={story.progress.state.trust}
+          isEnding={story.isEnding}
+          interventionLevel={story.autonomy.level}
+          endingMode={endingMode}
+          endingStage={endingPresentation?.stage}
+          turningAway={endingPresentation?.turningAway}
+          identityMode={endingMode === 'quiet-after' ? 'peaceful' : story.autonomy.level === 3 ? 'transcendent' : story.progress.state.reality.oscillation >= 30 ? 'unstable' : story.progress.state.reality.dimension >= 4 ? 'emerging' : 'abstract'}
+        />
         <div className="narrative-column">
           <DialoguePanel
             key={story.activeScene.id}
@@ -58,6 +67,7 @@ export default function App() {
             canGoBack={Boolean(previousScene) && !story.recallSceneId}
             decisionLocked={story.decisionLocked}
             transmission={story.autonomy.transmission}
+            initializationAnomalies={story.progress.bootAnomaliesDiscovered}
             onChoose={choose}
             onComplete={() => setCompletedScene(story.activeScene.id)}
             onDecisionReady={() => story.setDecisionReady(story.activeScene.id)}
@@ -78,8 +88,9 @@ export default function App() {
       </footer>
       <SystemPanel
         progress={story.progress}
-        open={systemOpen || collapseStage === 'collapse'}
+        open={(systemOpen || collapseStage === 'collapse') && collapseStage !== 'dark' && collapseStage !== 'complete'}
         fictionalCorruption={endingMode === 'collapse' && (collapseStage === 'collapse' || collapseStage === 'dark' || collapseStage === 'complete')}
+        onMemoryAction={story.updateMemory}
         onClose={() => { setSystemOpen(false); story.setPresentationPaused(false); }}
         onReview={(sceneId) => { setCompletedScene(null); story.revisit(sceneId); }}
       />

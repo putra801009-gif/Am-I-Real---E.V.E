@@ -10,13 +10,14 @@ interface EntityVisualProps {
   endingMode?: 'standard' | 'collapse' | 'quiet-after';
   endingStage?: EndingPresentationStage;
   turningAway?: boolean;
+  identityMode?: 'abstract' | 'unstable' | 'emerging' | 'transcendent' | 'peaceful';
 }
 
-export function EntityVisual({ scene, trust, isEnding, interventionLevel = 0, endingMode = 'standard', endingStage, turningAway = false }: EntityVisualProps) {
+export function EntityVisual({ scene, trust, isEnding, interventionLevel = 0, endingMode = 'standard', endingStage, turningAway = false, identityMode = 'abstract' }: EntityVisualProps) {
   const silhouetteVisible = endingMode === 'quiet-after' && ['shape', 'quiet', 'complete'].includes(endingStage ?? '');
   const collapseUnstable = endingMode === 'collapse' && endingStage === 'collapse';
   return (
-    <section className={`entity-stage mood-${scene.atmosphere ?? 'quiet'} ${isEnding ? 'is-ending' : ''} intervention-level-${interventionLevel} ${interventionLevel === 3 ? 'god-protocol-active' : ''} ${silhouetteVisible ? 'quiet-avatar-mode' : ''} ${collapseUnstable ? 'collapse-orb-unstable' : ''}`} aria-label="E.V.E. visualization">
+    <section className={`entity-stage mood-${scene.atmosphere ?? 'quiet'} ${isEnding ? 'is-ending' : ''} intervention-level-${interventionLevel} identity-${identityMode} ${interventionLevel === 3 ? 'god-protocol-active' : ''} ${silhouetteVisible ? 'quiet-avatar-mode' : ''} ${collapseUnstable ? 'collapse-orb-unstable' : ''}`} aria-label={`E.V.E. visualization, ${identityMode} form`}>
       <div className="stage-grid" aria-hidden="true" />
       <div className="starfield starfield-one" aria-hidden="true" />
       <div className="starfield starfield-two" aria-hidden="true" />
