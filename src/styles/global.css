@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap');
+
+:root {
+  font-family: 'Newsreader', Georgia, serif;
+  color: #dce5f0;
+  background: #090d18;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --night: #090d18;
+  --blue: #18243b;
+  --steel: #8296b4;
+  --silver: #b7c9df;
+  --lavender: #d9c8d8;
+  --muted: #65738a;
+  --hairline: rgba(183, 201, 223, 0.15);
+  --mono: 'DM Mono', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { min-width: 320px; min-height: 100%; background: var(--night); }
+
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+
+button, a { color: inherit; font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible { outline: 1px solid var(--lavender); outline-offset: 4px; }
+::selection { color: var(--night); background: var(--lavender); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}

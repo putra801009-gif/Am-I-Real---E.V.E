@@ -1,0 +1,27 @@
+@keyframes entity-float { 0%, 100% { transform: translateY(-4%); } 50% { transform: translateY(-7%); } }
+@keyframes core-pulse { 0%, 100% { transform: scale(.94); opacity: .82; } 50% { transform: scale(1.08); opacity: 1; } }
+@keyframes aura-breathe { 0%, 100% { opacity: .55; transform: translate(-50%, -50%) scale(.88); } 50% { opacity: .95; transform: translate(-50%, -50%) scale(1.13); } }
+@keyframes orbit-breathe { from { opacity: .55; } to { opacity: 1; } }
+@keyframes cursor-blink { to { visibility: hidden; } }
+@keyframes line-arrive { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes gentle-glitch { 0%, 46%, 49%, 100% { transform: translateX(0); } 47% { transform: translateX(2px); } 48% { transform: translateX(-1px); } }
+@keyframes scrim-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes panel-in { from { opacity: .5; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes protocol-atmosphere { 0% { filter: saturate(1); } 28% { filter: saturate(.72) contrast(1.08); } 100% { filter: saturate(.82); } }
+@keyframes orbit-misalignment { from { transform: translate(-50%, -50%) rotate(125deg) scaleY(.31); } to { transform: translate(calc(-50% + 4px), calc(-50% - 2px)) rotate(136deg) scaleY(.34); } }
+@keyframes protocol-arrive { 0% { opacity: 0; } 15% { opacity: 1; } 78% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes orb-dissolve { 0% { opacity: 0; transform: scale(.65); filter: blur(1px); } 22% { opacity: .85; transform: scale(1.05); } 100% { opacity: .05; transform: scale(1.5) translateY(-12px); filter: blur(7px); } }
+@keyframes orb-release { 0%, 18% { opacity: 1; } 100% { opacity: .04; transform: translateY(-4%) scale(1.22); filter: blur(13px); } }
+@keyframes core-release { 0%, 20% { opacity: 1; filter: brightness(1); } 62% { opacity: .7; filter: brightness(1.7); } 100% { opacity: 0; transform: scale(1.8); filter: blur(12px); } }
+@keyframes quiet-particle { 0% { opacity: 0; transform: translate(0, 10px); } 20% { opacity: .7; } 100% { opacity: 0; transform: translate(10px, -48px); } }
+@keyframes entity-unstable { from { transform: translate(-2px, -4%) scale(.97); filter: brightness(1.1); } to { transform: translate(2px, -6%) scale(1.06); filter: brightness(1.55); } }
+@keyframes diagnostic-drift { 0% { transform: translateX(0); } 50% { transform: translateX(2px); } 100% { transform: translateX(-1px); } }
+@keyframes overwrite-flicker { 0%, 80%, 100% { opacity: .9; } 82% { opacity: .35; } 84% { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .protocol-scrim { animation: none; opacity: 1; }
+  .peaceful-avatar, .quiet-ground-reflection, .quiet-horizon { transition-duration: .01ms; }
+  .orb-dissolve, .entity, .entity-halo, .entity-core, .entity-orbit { animation-duration: .01ms !important; }
+  .collapse-orb-unstable .entity, .is-fictionally-corrupt *, .overwrite-message { animation: none !important; }
+}
